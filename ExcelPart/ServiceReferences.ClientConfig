@@ -1,0 +1,16 @@
+﻿<configuration>
+    <system.serviceModel>
+        <bindings>
+            <basicHttpBinding>
+                <binding name="PeopleSoap" maxBufferSize="2147483647" maxReceivedMessageSize="2147483647">
+                    <security mode="Transport" />
+                </binding>
+            </basicHttpBinding>
+        </bindings>
+        <client>
+            <endpoint address="https://teams.aexp.com/sites/excel/_vti_bin/People.asmx"
+                binding="basicHttpBinding" bindingConfiguration="PeopleSoap"
+                contract="PeopleService.PeopleSoap" name="PeopleSoap" />
+        </client>
+    </system.serviceModel>
+</configuration>
