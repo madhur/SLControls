@@ -279,7 +279,7 @@ namespace excel_create.Controls
             AccountListBox.ItemsSource=SelectedAccounts;
             AccountListBox.DisplayMemberPath = "DisplayName";
             AccountListBox.DataContext = SelectedAccounts;
-
+            
         }
         
 
