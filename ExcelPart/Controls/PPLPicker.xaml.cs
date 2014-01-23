@@ -16,18 +16,19 @@ using System.Threading;
 using Microsoft.SharePoint.Client;
 using ExcelPart;
 using ExcelPart.PeopleService;
+using System.Text;
+using System.Windows.Data;
+using System.Collections.ObjectModel;
 
 namespace excel_create.Controls
 {
-
-
     public partial class PPLPicker : ChildWindow
     {
 
         #region Event Handler
 
         public event EventHandler SubmitClicked;
-       
+
 
 
         #endregion
@@ -35,14 +36,10 @@ namespace excel_create.Controls
         public string HostName { get; set; }
         public string SelectedAccountName { get; set; }
         public MainPage HostControl { get; set; }
-
-        public List<AccountList> SelectedAccounts;
-
         
+        SelectedAccounts selectedAccounts;
 
         public bool AllowMultiple { get; set; }
-        
-        
 
         public enum AddressType
         {
@@ -50,7 +47,7 @@ namespace excel_create.Controls
             director,
             vp,
             fte_contribute
-           
+
         }
 
 
@@ -61,30 +58,28 @@ namespace excel_create.Controls
             public string DisplayName { get; set; }
             public string AccountName { get; set; }
             public string Email { get; set; }
-           
+
             public string Department { get; set; }
 
-            
-            public PickerEntry(string displayName, string accountName, string email,  string department)
+
+            public PickerEntry(string displayName, string accountName, string email, string department)
             {
                 this.DisplayName = displayName;
                 this.AccountName = accountName;
-                this.Email = email;                
+                this.Email = email;
                 this.Department = department;
-                
-
-              
             }
+
             public override string ToString()
-            {         
-               
+            {
+
                 return DisplayName + " - " + Email + " - " + Department;
 
             }
-            
+
         }
-                
-                 
+
+
 
         public PPLPicker()
         {
@@ -92,18 +87,25 @@ namespace excel_create.Controls
 
             UserNameTxt.TextDecorations = TextDecorations.Underline;
 
-            SelectedAccounts = new List<AccountList>();
+            selectedAccounts = new SelectedAccounts();
 
+            Binding binding = new Binding()
+            {
+                Source = selectedAccounts,
+                Path = new PropertyPath("DisplayName"),
+                Mode = BindingMode.TwoWay
+            };
 
-        
+            // AccountListBox.SetBinding(searc
+            AccountListBox.DataContext = selectedAccounts;
+
         }
+
         private void OKBtn_Click(object sender, RoutedEventArgs e)
         {
-
-            
             //make sure a value was selected
             if (string.IsNullOrEmpty(UserNameTxt.Text))
-            { 
+            {
                 MessageBox.Show("You must select a user before clicking OK; if you wish to " +
                     "cancel this operation then click the Cancel button.", "Select User",
                    MessageBoxButton.OK);
@@ -111,18 +113,44 @@ namespace excel_create.Controls
                 return;
             }
             //plug in the values
-            if (SubmitClicked!=null)
+            if (SubmitClicked != null)
             {
-                
+
                 SubmitClicked(this, new EventArgs());
-                              
-           }
-                
-             this.DialogResult = true;
-            
-            
+
+            }
+
+            MessageBox.Show(GetDisplayNames(selectedAccounts), "Selected People", MessageBoxButton.OK);
+            MessageBox.Show(GetDisplayAccounts(selectedAccounts), "Selected Accounts", MessageBoxButton.OK);
+
+            this.DialogResult = true;
         }
 
+        private string GetDisplayNames(ObservableCollection<AccountList> accountList)
+        {
+            StringBuilder dispString = new StringBuilder();
+
+            foreach (AccountList account in accountList)
+            {
+                dispString = dispString.Append(account.DisplayName + ";");
+            }
+
+            return dispString.ToString();
+
+        }
+
+        private string GetDisplayAccounts(ObservableCollection<AccountList> accountList)
+        {
+            StringBuilder dispString = new StringBuilder();
+
+            foreach (AccountList account in accountList)
+            {
+                dispString = dispString.Append(account.AccountName + ";");
+            }
+
+            return dispString.ToString();
+
+        }
 
         private void CloseDialog()
         {
@@ -147,19 +175,19 @@ namespace excel_create.Controls
                 //change the cursor to hourglass
                 this.Cursor = Cursors.Wait;
 
-                
-                 PeopleSoapClient ps = new PeopleSoapClient();
+
+                PeopleSoapClient ps = new PeopleSoapClient();
                 //use the host name property to configure the request against the site in 
                 //which the control is hosted
-              ps.Endpoint.Address =
-             new System.ServiceModel.EndpointAddress("https://teams.aexp.com/sites/excel" + "/_vti_bin/People.asmx");
-              
-                
-                
+                ps.Endpoint.Address =
+               new System.ServiceModel.EndpointAddress("https://teams.aexp.com/sites/excel" + "/_vti_bin/People.asmx");
+
+
+
                 //create the handler for when the call completes
-               ps.SearchPrincipalsCompleted += new EventHandler<SearchPrincipalsCompletedEventArgs>(ps_SearchPrincipalsCompleted);
-               //execute the search
-               ps.SearchPrincipalsAsync(SearchTxt.Text, 50, SPPrincipalType.User);
+                ps.SearchPrincipalsCompleted += new EventHandler<SearchPrincipalsCompletedEventArgs>(ps_SearchPrincipalsCompleted);
+                //execute the search
+                ps.SearchPrincipalsAsync(SearchTxt.Text, 50, SPPrincipalType.User);
             }
             catch (Exception ex)
             {
@@ -190,17 +218,17 @@ namespace excel_create.Controls
                     foreach (PrincipalInfo pi in results)
                     {
                         String decodedAccount = checkClaimsUser(pi.AccountName);
-                        if(!values.ContainsKey(decodedAccount))
+                        if (!values.ContainsKey(decodedAccount))
                             values.Add(decodedAccount, new PickerEntry(pi.DisplayName, decodedAccount, pi.Email, pi.Department));
                     }
 
                     ResultsLst.Items.Clear();
-                    
+
                     foreach (PickerEntry pi in values.Values)
                     {
                         ResultsLst.Items.Add(new PickerEntry(pi.DisplayName, pi.AccountName, pi.Email, pi.Department));
 
-                        
+
                     }
                 }
             }
@@ -235,7 +263,7 @@ namespace excel_create.Controls
             }
 
 
-            return decodedName.ToLower() ;
+            return decodedName.ToLower();
 
         }
 
@@ -251,38 +279,33 @@ namespace excel_create.Controls
 
             AddPickerEntry();
         }
+
         private void AddPickerEntry()
         {
-                      
-                //cast the selected name as a PickerEntry
-                PickerEntry pe = (PickerEntry)ResultsLst.SelectedItem;
-                UserNameTxt.Text = pe.DisplayName;
-                SelectedAccountName = pe.AccountName;
 
-                if (AllowMultiple)
-                {
-                    SelectedAccounts.Add(new AccountList(pe.AccountName, pe.DisplayName));
-                }
-                else
-                {
-                    SelectedAccounts.Clear();
-                    SelectedAccounts.Add(new AccountList(pe.AccountName, pe.DisplayName));
+            //cast the selected name as a PickerEntry
+            PickerEntry pe = (PickerEntry)ResultsLst.SelectedItem;
+            UserNameTxt.Text = pe.DisplayName;
+            SelectedAccountName = pe.AccountName;
 
-                }
+            bool contains = selectedAccounts.Any(p => p.AccountName.Equals(SelectedAccountName));
 
-                syncListBox();
+            if (AllowMultiple && !contains)
+            {
 
-         }
+                selectedAccounts.Add(new AccountList(pe.AccountName, pe.DisplayName));
+            }
+            else
+            {
+                selectedAccounts.Clear();
+                selectedAccounts.Add(new AccountList(pe.AccountName, pe.DisplayName));
 
-        private void syncListBox()
-        {
-            AccountListBox.ItemsSource=SelectedAccounts;
-            AccountListBox.DisplayMemberPath = "DisplayName";
-            AccountListBox.DataContext = SelectedAccounts;
+            }
+
             
-        }
-        
+          //  syncListBox();
 
+        }
 
         private void CancelBtn_Click(object sender, RoutedEventArgs e)
         {
@@ -297,12 +320,19 @@ namespace excel_create.Controls
         }
 
 
-                
+
         public string Email { get; set; }
 
         public string Department { get; set; }
+
+        private void RemoveAccountButton_click(object sender, RoutedEventArgs e)
+        {
+            if (this.AccountListBox.SelectedIndex >= 0)
+                this.AccountListBox.Items.RemoveAt(this.AccountListBox.SelectedIndex);
+
+        }
     }
 
-   
+
 }
 

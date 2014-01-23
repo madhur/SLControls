@@ -16,7 +16,14 @@ namespace ExcelPart
     {
         public MainPage()
         {
-            InitializeComponent();
+           // InitializeComponent();
         }
+
+        private void second_Closed(object sender, EventArgs e)
+        {
+
+        }
+
+       
     }
 }

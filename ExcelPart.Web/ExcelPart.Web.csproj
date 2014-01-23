@@ -58,6 +58,7 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="clientaccesspolicy.xml" />
     <Content Include="ClientBin\ExcelPart.xap" />
     <Content Include="ExcelPartTestPage.aspx" />
     <Content Include="ExcelPartTestPage.html" />

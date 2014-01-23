@@ -2,15 +2,16 @@
            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
            xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
            Width="500" Height="583" 
            Title="">
-    <Grid x:Name="LayoutRoot" Margin="2">
+    <Grid x:Name="LayoutRoot" Margin="2,2,2,-3">
         <Grid.RowDefinitions>
             <RowDefinition />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Border BorderThickness="1" BorderBrush="Gray">
-            <Grid Margin="0,0,0,9">
+        <Border BorderThickness="1" BorderBrush="Gray" Margin="0,0,0,10">
+            <Grid Margin="0,0,0,61">
 
                 <Grid.RowDefinitions>
                     <RowDefinition Height="30" />
@@ -25,7 +26,7 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="78,3,77,3" VerticalAlignment="Center" HorizontalAlignment="Center" Height="24" Width="321">
-                    <TextBlock HorizontalAlignment="Center" Name="textBlock1" Text="Find" VerticalAlignment="Center" Width="33" FontSize="12" FontFamily="Arial" FontWeight="Bold" />
+                    <TextBlock HorizontalAlignment="Center" x:Name="textBlock1" Text="Find" VerticalAlignment="Center" Width="33" FontSize="12" FontFamily="Arial" FontWeight="Bold" />
                     <TextBox x:Name="SearchTxt" Width="266" KeyUp="SearchTxt_KeyUp" />
                     <Button x:Name="SearchBtn" Click="SearchBtn_Click">
                         <Image Source="/excel_create;component/Images/search32x32.png" Width="16" Height="16" />
@@ -34,7 +35,7 @@
                 <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Center" Margin="10,10,10,0" Width="456" Grid.RowSpan="2">
                     <ListBox x:Name="ResultsLst" Height="222" Margin="10,0"/>
                 </StackPanel>
-                <Button x:Name="AddNameBtn" Content="Add ->" Click="AddNameBtn_Click" Margin="48,0,384,10" VerticalAlignment="Bottom" Grid.Row="3" Height="29"/>
+                <Button x:Name="AddNameBtn" Content="Add -&gt;" Click="AddNameBtn_Click" Margin="48,0,384,10" VerticalAlignment="Bottom" Grid.Row="3" Height="29"/>
                 <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="106,0,37,9" VerticalAlignment="Bottom" HorizontalAlignment="Center" Height="29" Width="333" Background="White">
 
 
@@ -46,9 +47,17 @@
                     <Button x:Name="CancelBtn" Content="Cancel" Width="101" Height="20" Padding="3" Click="CancelBtn_Click" />
                 </StackPanel>
                 <TextBox x:Name="fte_txtbx" HorizontalAlignment="Left" Height="23" Margin="23,4,0,0" Grid.Row="4" TextWrapping="Wrap" Text="No" VerticalAlignment="Top" Width="28" Visibility="Collapsed"/>
-                <ListBox x:Name="AccountListBox" DisplayMemberPath="DisplayName" HorizontalAlignment="Left" Height="138" Margin="106,10,0,0" Grid.Row="4" VerticalAlignment="Top" Width="333">
-                    
+                <ListBox x:Name="AccountListBox" HorizontalAlignment="Left" ItemsSource="{Binding Path=DisplayName, Mode=TwoWay}" Height="105" Margin="106,10,0,0" Grid.Row="4" VerticalAlignment="Top" Width="276.154" RenderTransformOrigin="0.5,0.5" >
+                    <ListBox.RenderTransform>
+                        <CompositeTransform SkewX="0.661" TranslateX="0.606"/>
+                    </ListBox.RenderTransform>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Path=DisplayName}"></TextBlock>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
                 </ListBox>
+                <Button x:Name="RemoveAccountButton" Content="x" HorizontalAlignment="Left" Margin="392,10,0,0" Grid.Row="4" VerticalAlignment="Top" Width="33" RenderTransformOrigin="-0.952,2.134" Click="RemoveAccountButton_click"/>
             </Grid>
         </Border>
 
