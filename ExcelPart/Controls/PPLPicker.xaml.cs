@@ -37,7 +37,7 @@ namespace excel_create.Controls
         public string SelectedAccountName { get; set; }
         public MainPage HostControl { get; set; }
         
-        SelectedAccounts selectedAccounts;
+        public SelectedAccounts selectedAccounts;
 
         public bool AllowMultiple { get; set; }
 
@@ -98,6 +98,7 @@ namespace excel_create.Controls
 
             // AccountListBox.SetBinding(searc
             AccountListBox.DataContext = selectedAccounts;
+            AccountListBox.ItemsSource = selectedAccounts;
 
         }
 
@@ -290,16 +291,19 @@ namespace excel_create.Controls
 
             bool contains = selectedAccounts.Any(p => p.AccountName.Equals(SelectedAccountName));
 
-            if (AllowMultiple && !contains)
+            if (!contains)
             {
+                if (AllowMultiple)
+                {
 
-                selectedAccounts.Add(new AccountList(pe.AccountName, pe.DisplayName));
-            }
-            else
-            {
-                selectedAccounts.Clear();
-                selectedAccounts.Add(new AccountList(pe.AccountName, pe.DisplayName));
+                    selectedAccounts.Add(new AccountList(pe.AccountName, pe.DisplayName));
+                }
+                else
+                {
+                    selectedAccounts.Clear();
+                    selectedAccounts.Add(new AccountList(pe.AccountName, pe.DisplayName));
 
+                }
             }
 
             
@@ -328,7 +332,11 @@ namespace excel_create.Controls
         private void RemoveAccountButton_click(object sender, RoutedEventArgs e)
         {
             if (this.AccountListBox.SelectedIndex >= 0)
-                this.AccountListBox.Items.RemoveAt(this.AccountListBox.SelectedIndex);
+            {
+                AccountList account = AccountListBox.SelectedItem as AccountList;
+                bool removed=selectedAccounts.Remove(account);
+
+            }
 
         }
     }
