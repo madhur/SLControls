@@ -105,14 +105,26 @@ namespace excel_create.Controls
         private void OKBtn_Click(object sender, RoutedEventArgs e)
         {
             //make sure a value was selected
-            if (string.IsNullOrEmpty(UserNameTxt.Text))
+           /* if (string.IsNullOrEmpty(UserNameTxt.Text))
+            {
+              
+            }*/
+
+            if (selectedAccounts.Count > 0)
+            {
+                MessageBox.Show(GetDisplayNames(selectedAccounts), "Selected People", MessageBoxButton.OK);
+                MessageBox.Show(GetDisplayAccounts(selectedAccounts), "Selected Accounts", MessageBoxButton.OK);
+            }
+            else
             {
                 MessageBox.Show("You must select a user before clicking OK; if you wish to " +
-                    "cancel this operation then click the Cancel button.", "Select User",
-                   MessageBoxButton.OK);
+                  "cancel this operation then click the Cancel button.", "Select User",
+                 MessageBoxButton.OK);
                 CancelBtn.Focus();
                 return;
+
             }
+
             //plug in the values
             if (SubmitClicked != null)
             {
@@ -121,8 +133,7 @@ namespace excel_create.Controls
 
             }
 
-            MessageBox.Show(GetDisplayNames(selectedAccounts), "Selected People", MessageBoxButton.OK);
-            MessageBox.Show(GetDisplayAccounts(selectedAccounts), "Selected Accounts", MessageBoxButton.OK);
+          
 
             this.DialogResult = true;
         }

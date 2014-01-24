@@ -3,7 +3,7 @@
            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
            xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-           xmlns:local="clr-namespace:excel_create.Controls" x:Class="excel_create.Controls.PPLPicker" 
+           xmlns:local="clr-namespace:excel_create.Controls" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" mc:Ignorable="d" x:Class="excel_create.Controls.PPLPicker" 
            Width="500" Height="583" 
            Title="">
     <Grid x:Name="LayoutRoot" Margin="2,2,2,-3">
@@ -40,7 +40,7 @@
                 <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="106,0,37,9" VerticalAlignment="Bottom" HorizontalAlignment="Center" Height="29" Width="333" Background="White">
 
 
-                    <TextBlock x:Name="UserNameTxt" DataContext="selectedAccounts" Text="{Binding DisplayName, Mode=TwoWay}" Width="326" Padding="5" VerticalAlignment="Center" Margin="9,7,0,6" HorizontalAlignment="Center" Height="29" FontFamily="Arial" FontSize="12" />
+                    <TextBlock Visibility="Collapsed" x:Name="UserNameTxt" DataContext="selectedAccounts" Text="{Binding DisplayName, Mode=TwoWay}" Width="326" Padding="5" VerticalAlignment="Center" Margin="9,7,0,6" HorizontalAlignment="Center" Height="29" FontFamily="Arial" FontSize="12" />
 
                 </StackPanel>
                 <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="0,0,37,13" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="20" Width="200">
@@ -48,19 +48,21 @@
                     <Button x:Name="CancelBtn" Content="Cancel" Width="101" Height="20" Padding="3" Click="CancelBtn_Click" />
                 </StackPanel>
                 <TextBox x:Name="fte_txtbx" HorizontalAlignment="Left" DataContext="selectedAccounts" Text="{Binding DisplayName, Mode=TwoWay}" Height="23" Margin="23,4,0,0" Grid.Row="4" TextWrapping="Wrap" VerticalAlignment="Top" Width="28" Visibility="Collapsed"/>
-                <ListBox x:Name="AccountListBox" DataContext="selectedAccounts" HorizontalAlignment="Left" ItemsSource="{Binding SelectedAccounts, Mode=TwoWay}" Height="105" Margin="106,10,0,0" Grid.Row="4" VerticalAlignment="Top" Width="276.154" RenderTransformOrigin="0.5,0.5" >
-                   
+                <ListBox x:Name="AccountListBox" DataContext="selectedAccounts" HorizontalAlignment="Left" ItemsSource="{Binding SelectedAccounts, Mode=TwoWay}" Height="105" Margin="105,10,0,0" Grid.Row="3" VerticalAlignment="Top" Width="276.154" RenderTransformOrigin="0.5,0.5" Grid.RowSpan="2" UseLayoutRounding="False" d:LayoutRounding="Auto" >
+
                     <ListBox.RenderTransform>
                         <CompositeTransform SkewX="0.661" TranslateX="0.606"/>
                     </ListBox.RenderTransform>
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding DisplayName}"/>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding DisplayName}"/>
+                            </StackPanel>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
-                    
+
                 </ListBox>
-                <Button x:Name="RemoveAccountButton" Content="x" HorizontalAlignment="Left" Margin="392,10,0,0" Grid.Row="4" VerticalAlignment="Top" Width="33" RenderTransformOrigin="-0.952,2.134" Click="RemoveAccountButton_click"/>
+                <Button x:Name="RemoveAccountButton" Content="x" HorizontalAlignment="Left" Margin="389,9,0,0" Grid.Row="3" VerticalAlignment="Top" Width="33" RenderTransformOrigin="-0.952,2.134" Click="RemoveAccountButton_click"/>
             </Grid>
         </Border>
 
