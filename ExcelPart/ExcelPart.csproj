@@ -76,6 +76,7 @@
     </Reference>
     <Reference Include="System.Net" />
     <Reference Include="System.Windows.Controls, Version=5.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Windows.Controls.Input.Toolkit, Version=5.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Windows.Browser" />
   </ItemGroup>
@@ -84,9 +85,14 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\AccountList.cs" />
+    <Compile Include="Controls\PeopleChooser.xaml.cs">
+      <DependentUpon>PeopleChooser.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\PickerEntry.cs" />
     <Compile Include="Controls\PPLPicker.xaml.cs">
       <DependentUpon>PPLPicker.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Utils.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
@@ -102,6 +108,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </ApplicationDefinition>
+    <Page Include="Controls\PeopleChooser.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\PPLPicker.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -120,6 +130,15 @@
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
     <None Include="Service References\PeopleService\People.wsdl" />
+    <Resource Include="Images\AddressBook.png" />
+    <Resource Include="Images\bgg_OverviewActive.png" />
+    <Resource Include="Images\cell-error.png" />
+    <Resource Include="Images\CheckNames.png" />
+    <Resource Include="Images\gbgrey_ScopeActive.png" />
+    <Resource Include="Images\ggBlue_FinancialsActive.png" />
+    <Resource Include="Images\ggrey_commentsActive.png" />
+    <Resource Include="Images\help.png" />
+    <Resource Include="Images\search32x32.png" />
     <Content Include="ServiceReferences.ClientConfig" />
   </ItemGroup>
   <ItemGroup>

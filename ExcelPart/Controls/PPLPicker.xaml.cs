@@ -19,6 +19,7 @@ using ExcelPart.PeopleService;
 using System.Text;
 using System.Windows.Data;
 using System.Collections.ObjectModel;
+using ExcelPart.Controls;
 
 namespace excel_create.Controls
 {
@@ -53,39 +54,11 @@ namespace excel_create.Controls
 
         public AddressType PickerAddressType { get; set; }
 
-        private class PickerEntry
-        {
-            public string DisplayName { get; set; }
-            public string AccountName { get; set; }
-            public string Email { get; set; }
-
-            public string Department { get; set; }
-
-
-            public PickerEntry(string displayName, string accountName, string email, string department)
-            {
-                this.DisplayName = displayName;
-                this.AccountName = accountName;
-                this.Email = email;
-                this.Department = department;
-            }
-
-            public override string ToString()
-            {
-
-                return DisplayName + " - " + Email + " - " + Department;
-
-            }
-
-        }
-
-
-
         public PPLPicker()
         {
             InitializeComponent();
 
-            UserNameTxt.TextDecorations = TextDecorations.Underline;
+            // UserNameTxt.TextDecorations = TextDecorations.Underline;
 
             selectedAccounts = new SelectedAccounts();
 
@@ -104,16 +77,12 @@ namespace excel_create.Controls
 
         private void OKBtn_Click(object sender, RoutedEventArgs e)
         {
-            //make sure a value was selected
-           /* if (string.IsNullOrEmpty(UserNameTxt.Text))
-            {
-              
-            }*/
+          
 
             if (selectedAccounts.Count > 0)
             {
-                MessageBox.Show(GetDisplayNames(selectedAccounts), "Selected People", MessageBoxButton.OK);
-                MessageBox.Show(GetDisplayAccounts(selectedAccounts), "Selected Accounts", MessageBoxButton.OK);
+               // MessageBox.Show(GetDisplayNames(selectedAccounts), "Selected People", MessageBoxButton.OK);
+               // MessageBox.Show(GetDisplayAccounts(selectedAccounts), "Selected Accounts", MessageBoxButton.OK);
             }
             else
             {
@@ -168,7 +137,7 @@ namespace excel_create.Controls
         {
             //clear out selections for next time
             SearchTxt.Text = string.Empty;
-            UserNameTxt.Text = string.Empty;
+           //  UserNameTxt.Text = string.Empty;
             ResultsLst.Items.Clear();
         }
 
@@ -229,7 +198,7 @@ namespace excel_create.Controls
 
                     foreach (PrincipalInfo pi in results)
                     {
-                        String decodedAccount = checkClaimsUser(pi.AccountName);
+                        String decodedAccount = Utils.checkClaimsUser(pi.AccountName);
                         if (!values.ContainsKey(decodedAccount))
                             values.Add(decodedAccount, new PickerEntry(pi.DisplayName, decodedAccount, pi.Email, pi.Department));
                     }
@@ -256,28 +225,7 @@ namespace excel_create.Controls
             }
         }
 
-        private string checkClaimsUser(String userName)
-        {
-            string decodedName;
-
-            if (userName.Contains("|"))
-            {
-                string[] splitUserName = userName.Split(new Char[] { '|' }, StringSplitOptions.None);
-
-                if (splitUserName.Length > 0)
-                    decodedName = splitUserName[1];
-                else
-                    decodedName = userName;
-            }
-            else
-            {
-                decodedName = userName;
-            }
-
-
-            return decodedName.ToLower();
-
-        }
+       
 
         private void AddNameBtn_Click(object sender, RoutedEventArgs e)
         {
@@ -297,7 +245,7 @@ namespace excel_create.Controls
 
             //cast the selected name as a PickerEntry
             PickerEntry pe = (PickerEntry)ResultsLst.SelectedItem;
-            UserNameTxt.Text = pe.DisplayName;
+            // UserNameTxt.Text = pe.DisplayName;
             SelectedAccountName = pe.AccountName;
 
             bool contains = selectedAccounts.Any(p => p.AccountName.Equals(SelectedAccountName));

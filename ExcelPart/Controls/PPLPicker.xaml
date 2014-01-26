@@ -37,17 +37,12 @@
                     <ListBox x:Name="ResultsLst" Height="222" Margin="10,0"/>
                 </StackPanel>
                 <Button x:Name="AddNameBtn" Content="Add -&gt;" Click="AddNameBtn_Click" Margin="48,0,384,10" VerticalAlignment="Bottom" Grid.Row="3" Height="29"/>
-                <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="106,0,37,9" VerticalAlignment="Bottom" HorizontalAlignment="Center" Height="29" Width="333" Background="White">
-
-
-                    <TextBlock Visibility="Collapsed" x:Name="UserNameTxt" DataContext="selectedAccounts" Text="{Binding DisplayName, Mode=TwoWay}" Width="326" Padding="5" VerticalAlignment="Center" Margin="9,7,0,6" HorizontalAlignment="Center" Height="29" FontFamily="Arial" FontSize="12" />
-
-                </StackPanel>
+              
                 <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="0,0,37,13" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="20" Width="200">
                     <Button x:Name="OKBtn" Content="OK" Width="99" Click="OKBtn_Click" Height="20" Padding="3" />
                     <Button x:Name="CancelBtn" Content="Cancel" Width="101" Height="20" Padding="3" Click="CancelBtn_Click" />
                 </StackPanel>
-                <TextBox x:Name="fte_txtbx" HorizontalAlignment="Left" DataContext="selectedAccounts" Text="{Binding DisplayName, Mode=TwoWay}" Height="23" Margin="23,4,0,0" Grid.Row="4" TextWrapping="Wrap" VerticalAlignment="Top" Width="28" Visibility="Collapsed"/>
+                
                 <ListBox x:Name="AccountListBox" DataContext="selectedAccounts" HorizontalAlignment="Left" ItemsSource="{Binding SelectedAccounts, Mode=TwoWay}" Height="105" Margin="105,10,0,0" Grid.Row="3" VerticalAlignment="Top" Width="276.154" RenderTransformOrigin="0.5,0.5" Grid.RowSpan="2" UseLayoutRounding="False" d:LayoutRounding="Auto" >
 
                     <ListBox.RenderTransform>
