@@ -11,6 +11,6 @@
             <RowDefinition />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <ListBox x:Name="FileListBox" HorizontalAlignment="Left" Height="238" VerticalAlignment="Top" Width="430"/>
+        <ListBox x:Name="FileListBox" HorizontalAlignment="Left" Height="238" VerticalAlignment="Top" Width="430" Drop="FileListBox_Drop"/>
     </Grid>
 </controls:ChildWindow>

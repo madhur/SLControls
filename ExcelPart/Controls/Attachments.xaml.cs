@@ -83,6 +83,174 @@ namespace excel_create.Controls
             myClContext.ExecuteQueryAsync(OnConnectSucceeded, OnConnectFailed);
             busyIndicatorElement.IsBusy = true;*/
         }
+
+        public void CreateFolder(string siteUrl, string listName, string relativePath, string folderName)
+        {
+            using (ClientContext clientContext = new ClientContext(siteUrl))
+            {
+                Web web = clientContext.Web;
+                List list = web.Lists.GetByTitle(listName);
+
+                ListItemCreationInformation newItem = new ListItemCreationInformation();
+                newItem.UnderlyingObjectType = FileSystemObjectType.Folder;
+                newItem.FolderUrl = siteUrl + "/lists/" + listName;
+                if (!relativePath.Equals(string.Empty))
+                {
+                    newItem.FolderUrl += "/" + relativePath;
+                }
+                newItem.LeafName = folderName;
+                ListItem item = list.AddItem(newItem);
+                item.Update();
+                clientContext.ExecuteQuery();
+            }
+        }
+
+
+        public void SearchFolder(string siteUrl, string listName, string relativePath)
+        {
+            using (ClientContext clientContext = new ClientContext(siteUrl))
+            {
+                Web web = clientContext.Web;
+                List list = web.Lists.GetByTitle(listName);
+
+                string FolderFullPath = null;
+
+                CamlQuery query = CamlQuery.CreateAllFoldersQuery();
+
+                if (relativePath.Equals(string.Empty))
+                {
+                    FolderFullPath = "/lists/" + listName;
+                }
+                else
+                {
+                    FolderFullPath = "/lists/" + listName + "/" + relativePath;
+                }
+                if (!string.IsNullOrEmpty(FolderFullPath))
+                {
+                    query.FolderServerRelativeUrl = FolderFullPath;
+                }
+                IList<Folder> folderResult = new List<Folder>();
+
+                var listItems = list.GetItems(query);
+
+                clientContext.Load(list);
+                clientContext.Load(listItems, litems => litems.Include(
+                    li => li["DisplayName"],
+                    li => li["Id"]
+                    ));
+
+                clientContext.ExecuteQuery();
+
+                foreach (var item in listItems)
+                {
+
+                    Console.WriteLine("{0}----------{1}", item.Id, item.DisplayName);
+                }
+            }
+        }
+
+        public void DeleteFolder(string siteUrl, string listName, string relativePath, string folderName)
+        {
+            using (ClientContext clientContext = new ClientContext(siteUrl))
+            {
+                Web web = clientContext.Web;
+                List list = web.Lists.GetByTitle(listName);
+
+                CamlQuery query = new CamlQuery();
+                query.ViewXml = "<View Scope=\"RecursiveAll\"> " +
+                                "<Query>" +
+                                    "<Where>" +
+                                        "<And>" +
+                                            "<Eq>" +
+                                                "<FieldRef Name=\"FSObjType\" />" +
+                                                "<Value Type=\"Integer\">1</Value>" +
+                                             "</Eq>" +
+                                              "<Eq>" +
+                                                "<FieldRef Name=\"Title\"/>" +
+                                                "<Value Type=\"Text\">" + folderName + "</Value>" +
+                                              "</Eq>" +
+                                        "</And>" +
+                                     "</Where>" +
+                                "</Query>" +
+                                "</View>";
+
+                if (relativePath.Equals(string.Empty))
+                {
+                    query.FolderServerRelativeUrl = "/lists/" + listName;
+                }
+                else
+                {
+                    query.FolderServerRelativeUrl = "/lists/" + listName + "/" + relativePath;
+                }
+
+                var folders = list.GetItems(query);
+
+                clientContext.Load(list);
+                clientContext.Load(folders);
+                clientContext.ExecuteQuery();
+                if (folders.Count == 1)
+                {
+                    folders[0].DeleteObject();
+                    clientContext.ExecuteQuery();
+                }
+            }
+        }
+
+
+        public void RenameFolder(string siteUrl, string listName, string relativePath, string folderName, string folderNewName)
+        {
+            using (ClientContext clientContext = new ClientContext(siteUrl))
+            {
+                Web web = clientContext.Web;
+                List list = web.Lists.GetByTitle(listName);
+
+                string FolderFullPath = GetFullPath(listName, relativePath, folderName);
+
+                CamlQuery query = new CamlQuery();
+                query.ViewXml = "<View Scope=\"RecursiveAll\"> " +
+                                "<Query>" +
+                                    "<Where>" +
+                                        "<And>" +
+                                            "<Eq>" +
+                                                "<FieldRef Name=\"FSObjType\" />" +
+                                                "<Value Type=\"Integer\">1</Value>" +
+                                             "</Eq>" +
+                                              "<Eq>" +
+                                                "<FieldRef Name=\"Title\"/>" +
+                                                "<Value Type=\"Text\">" + folderName + "</Value>" +
+                                              "</Eq>" +
+                                        "</And>" +
+                                     "</Where>" +
+                                "</Query>" +
+                                "</View>";
+
+                if (relativePath.Equals(string.Empty))
+                {
+                    query.FolderServerRelativeUrl = "/lists/" + listName;
+                }
+                else
+                {
+                    query.FolderServerRelativeUrl = "/lists/" + listName + "/" + relativePath;
+                }
+                var folders = list.GetItems(query);
+
+                clientContext.Load(list);
+                clientContext.Load(list.Fields);
+                clientContext.Load(folders, fs => fs.Include(fi => fi["Title"],
+                    fi => fi["DisplayName"],
+                    fi => fi["FileLeafRef"]));
+                clientContext.ExecuteQuery();
+
+                if (folders.Count == 1)
+                {
+
+                    folders[0]["Title"] = folderNewName;
+                    folders[0]["FileLeafRef"] = folderNewName;
+                    folders[0].Update();
+                    clientContext.ExecuteQuery();
+                }
+            }
+        }
        
 
        
