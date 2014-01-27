@@ -8,13 +8,14 @@
     xmlns:Controls="clr-namespace:excel_create.Controls" xmlns:Controls1="clr-namespace:ExcelPart.Controls" x:Class="ExcelPart.MainPage"
     mc:Ignorable="d" d:DesignWidth="400" Height="198">
 
-    <Grid x:Name="LayoutRoot" Background="White" Margin="0,0,-107,-153">
-        <StackPanel>
+    <Grid x:Name="LayoutRoot" Background="White" Margin="0,0,-107,-230">
+        <StackPanel Margin="0,0,0,-56">
 
             <Controls1:PeopleChooser Name="SinglePeopleChooser" AllowMultiple="False" Width="Auto" d:LayoutOverrides="Height"/>
-            <Controls1:PeopleChooser Name="MultiplePeopleChooser" AllowMultiple="True" Width="Auto" d:LayoutOverrides="Height" Loaded="MultiplePeopleChooser_Loaded"/>
+            <Controls1:PeopleChooser Name="MultiplePeopleChooser" AllowMultiple="True" Width="Auto" d:LayoutOverrides="Height" />
             <Button Name="SubmitButton" Content="Submit" Click="SubmitButton_Click"/>
 
         </StackPanel>
+        <Button x:Name="LoadButton" Content="Load People Values" HorizontalAlignment="Left" Margin="216,382,0,0" VerticalAlignment="Top" Width="75" Click="LoadButton_Click"/>
     </Grid>
 </UserControl>
