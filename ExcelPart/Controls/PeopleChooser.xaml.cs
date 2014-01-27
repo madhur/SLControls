@@ -42,8 +42,6 @@ namespace ExcelPart.Controls
             peoplePicker.SubmitClicked += peoplePicker_SubmitClicked;
             selectedAccounts = new SelectedAccounts();
 
-           
-           
         }
 
         void PeopleChooser_Loaded(object sender, RoutedEventArgs e)

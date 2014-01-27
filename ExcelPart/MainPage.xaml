@@ -8,7 +8,7 @@
     xmlns:Controls="clr-namespace:excel_create.Controls" xmlns:Controls1="clr-namespace:ExcelPart.Controls" x:Class="ExcelPart.MainPage"
     mc:Ignorable="d" d:DesignWidth="400" Height="198">
 
-    <Grid x:Name="LayoutRoot" Background="White" Margin="0,0,-107,-230">
+    <Grid x:Name="LayoutRoot" Background="White" Margin="0,0,-107,-482">
         <StackPanel Margin="0,0,0,-56">
 
             <Controls1:PeopleChooser Name="SinglePeopleChooser" AllowMultiple="False" Width="Auto" d:LayoutOverrides="Height"/>
@@ -17,5 +17,6 @@
 
         </StackPanel>
         <Button x:Name="LoadButton" Content="Load People Values" HorizontalAlignment="Left" Margin="216,382,0,0" VerticalAlignment="Top" Width="75" Click="LoadButton_Click"/>
+        <Controls:Attachments HorizontalAlignment="Left" Margin="20,425,0,-95" VerticalAlignment="Top"/>
     </Grid>
 </UserControl>

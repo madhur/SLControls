@@ -12,19 +12,29 @@ using System.Windows.Shapes;
 using Microsoft.SharePoint.Client;
 using System.Threading;
 using System.IO;
+using System.Windows.Resources;
+using ExcelPart.Controls;
 
 
 namespace excel_create.Controls
 {
-    public partial class Attachments : ChildWindow
+    public partial class Attachments : UserControl
     {
+      
         private ClientContext myClContext;
-            
+        public SelectedFiles selectedFiles;            
+
+
         public Attachments()
         {
             InitializeComponent();
+            selectedFiles = new SelectedFiles();
 
             ConnectToSP();
+
+            FileListBox.DataContext = selectedFiles;
+            FileListBox.ItemsSource = selectedFiles;
+
         }
 
         private void FileListBox_Drop(object sender, DragEventArgs e)
@@ -69,19 +79,33 @@ namespace excel_create.Controls
             Microsoft.SharePoint.Client.File clFileToUpload = destinationList.RootFolder.Files.Add(fciFileToUpload);
 
             myClContext.Load(clFileToUpload);
-            myClContext.ExecuteQueryAsync(OnLoadingSucceeded, OnLoadingFailed);
-            busyIndicatorElement.IsBusy = true;
+
+            myClContext.ExecuteQueryAsync((s, ee) =>
+            {
+                selectedFiles.Add(new FileList(fileToUpload.Name, fileToUpload.Name));
+                Dispatcher.BeginInvoke(() =>
+                {
+
+                    MessageBox.Show("Success", "Success", MessageBoxButton.OK);
+                }
+                    );
+
+                
+
+            },
+            (s, ee) =>
+            {
+                Console.WriteLine(ee.Message);
+
+            });
+         
         }
 
         private void ConnectToSP()
         {
             myClContext = new ClientContext("https://teams.aexp.com/sites/excel/");
 
-           /* myClContext.Load(myClContext.Web);
-            myClContext.Load(myClContext.Web.Lists);
-
-            myClContext.ExecuteQueryAsync(OnConnectSucceeded, OnConnectFailed);
-            busyIndicatorElement.IsBusy = true;*/
+          
         }
 
         public void CreateFolder(string siteUrl, string listName, string relativePath, string folderName)
@@ -196,6 +220,27 @@ namespace excel_create.Controls
             }
         }
 
+        private void FileUpload_Click(object sender, RoutedEventArgs e)
+        {
+            this.txtProgress.Text = string.Empty;
+
+            OpenFileDialog oFileDialog = new OpenFileDialog();
+            oFileDialog.Filter = "All Files|*.*";
+            oFileDialog.FilterIndex = 1;
+            oFileDialog.Multiselect = true;
+
+            string data = string.Empty;
+
+            if (oFileDialog.ShowDialog() == true)
+            {
+                foreach (FileInfo file in oFileDialog.Files)
+                {
+                    UploadFile(file, "Shared Documents");
+                }
+            }
+
+        }
+
 
         public void RenameFolder(string siteUrl, string listName, string relativePath, string folderName, string folderNewName)
         {
@@ -204,7 +249,7 @@ namespace excel_create.Controls
                 Web web = clientContext.Web;
                 List list = web.Lists.GetByTitle(listName);
 
-                string FolderFullPath = GetFullPath(listName, relativePath, folderName);
+              //  string FolderFullPath = GetFullPath(listName, relativePath, folderName);
 
                 CamlQuery query = new CamlQuery();
                 query.ViewXml = "<View Scope=\"RecursiveAll\"> " +
@@ -251,8 +296,8 @@ namespace excel_create.Controls
                 }
             }
         }
-       
 
+      
        
     }
 }

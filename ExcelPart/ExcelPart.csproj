@@ -85,6 +85,10 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\AccountList.cs" />
+    <Compile Include="Controls\Attachments.xaml.cs">
+      <DependentUpon>Attachments.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\FileList.cs" />
     <Compile Include="Controls\PeopleChooser.xaml.cs">
       <DependentUpon>PeopleChooser.xaml</DependentUpon>
     </Compile>
@@ -108,6 +112,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </ApplicationDefinition>
+    <Page Include="Controls\Attachments.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Controls\PeopleChooser.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
