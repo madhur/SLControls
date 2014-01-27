@@ -16,7 +16,7 @@ namespace ExcelPart
 {
     public partial class MainPage : UserControl
     {
-        Web webSite;
+        
         private List MadhurList;
         User user;
 
@@ -48,42 +48,48 @@ namespace ExcelPart
 
                 User user = ctx.Web.EnsureUser(singleValue.LookupValue);
 
-                ctx.Load(user);
-
-                ctx.ExecuteQueryAsync((ss, eee) =>
+                Dispatcher.BeginInvoke(() =>
                 {
-                    Dispatcher.BeginInvoke(() =>
-                    {
-                        SinglePeopleChooser.selectedAccounts.Clear();
-                        SinglePeopleChooser.selectedAccounts.Add(new AccountList(user.LoginName, user.Title));
+                    LoadUser(ctx);
 
-                    }
-                        );
-
-                },
-          (ss, eee) =>
-          {
-
-
-          });
-
+                }
+                    );
 
 
             },
            (s, ee) =>
            {
-
+               Console.WriteLine(ee.Message);
 
            });
 
+        }
 
+        private void LoadUser(ClientContext ctx)
+        {
+            ctx.Load(user);
 
+            ctx.ExecuteQueryAsync((ss, eee) =>
+            {
+                Dispatcher.BeginInvoke(() =>
+                {
+                    SinglePeopleChooser.selectedAccounts.Clear();
+                    Console.WriteLine(user.LoginName);
+                    SinglePeopleChooser.selectedAccounts.Add(new AccountList(user.LoginName, user.Title));
 
+                }
+                    );
 
+            },
+      (ss, eee) =>
+      {
+          Console.WriteLine(eee.Message);
 
+      });
 
 
         }
+
 
         private void second_Closed(object sender, EventArgs e)
         {
