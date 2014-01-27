@@ -56,105 +56,102 @@ namespace ExcelPart
                     string decodedName = Utils.checkClaimsUser(username);
                     string dispName = principal["Title"] as string;
 
-                                        Dispatcher.BeginInvoke(() =>
-                    {
-                        SinglePeopleChooser.selectedAccounts.Clear();
+                    Dispatcher.BeginInvoke(() =>
+{
+    SinglePeopleChooser.selectedAccounts.Clear();
 
-                        SinglePeopleChooser.selectedAccounts.Add(new AccountList(decodedName, dispName));
-                        SinglePeopleChooser.UserTextBox.Text = dispName;
+    SinglePeopleChooser.selectedAccounts.Add(new AccountList(decodedName, dispName));
+    SinglePeopleChooser.UserTextBox.Text = dispName;
 
-                    }
-                        );
-
-                
-                    
-                        userList = ctx.Web.SiteUserInfoList;
-                        ctx.Load(userList);
-
-                        users = userList.GetItems(CamlQuery.CreateAllItemsQuery());
-
-                        ctx.Load(users, items => items.Include(
-                            item => item.Id, item => item["Name"]));
-
-
-                        ctx.ExecuteQueryAsync((s, ee) =>
-                        {
-                            ListItem[] principals = new ListItem[multValue.Length];
-                           
-                                for (int i = 0; i < multValue.Length; i++)
-                                {
-                                    principals[i] = users.GetById(multValue[i].LookupId);
-                                }
-                           
-
-                            for (int i = 0; i < multValue.Length; i++)
-                            {
-                                ctx.Load(principals[i]);
-
-                                ctx.ExecuteQueryAsync((ssss, eeeee) =>
-                                {
-                                    try
-                                    {
-                                        username = principals[i]["Name"] as string;
-                                    }
-                                    catch (IndexOutOfRangeException ii)
-                                    {
-                                        return;
-                                    }
-
-                                    decodedName = Utils.checkClaimsUser(username);
-                                    dispName = principals[i]["Title"] as string;
-
-                                    Dispatcher.BeginInvoke(() =>
-                                    {
-
-
-                                        MultiplePeopleChooser.selectedAccounts.Add(new AccountList(decodedName, dispName));
-
-
-                                    }
-                                    );
-
-
-                                },
-                               (ssss, eeeee) =>
-                               {
-                                   Console.WriteLine(eeeee.Message);
-
-                               });
-
-                            }
-
-
-                
-                        },
-
-                         (ssss, eeeee) =>
-                         {
-                             Console.WriteLine(eeeee.Message);
-
-                         });
-
-
-                    
-
-
+}
+    );
 
                 },
-     (sss, eeee) =>
-     {
-         Console.WriteLine(eeee.Message);
+                  (sss, eeee) =>
+                  {
+                      Console.WriteLine(eeee.Message);
 
-     });
+                  });
 
 
             },
-      (ss, eee) =>
-      {
-          Console.WriteLine(eee.Message);
+             (sss, eeee) =>
+             {
+                 Console.WriteLine(eeee.Message);
 
-      });
+             });
 
+
+
+            userList = ctx.Web.SiteUserInfoList;
+            ctx.Load(userList);
+
+            users = userList.GetItems(CamlQuery.CreateAllItemsQuery());
+
+            ctx.Load(users, items => items.Include(
+                item => item.Id, item => item["Name"]));
+
+
+            ctx.ExecuteQueryAsync((s, ee) =>
+            {
+                ListItem[] principals = new ListItem[multValue.Length];
+
+                for (int i = 0; i < multValue.Length; i++)
+                {
+                    principals[i] = users.GetById(multValue[i].LookupId);
+                    ctx.Load(principals[i]);
+                }
+
+                ctx.ExecuteQueryAsync((ssss, eeeee) =>
+                {
+                    string username;
+
+                    for (int i = 0; i < multValue.Length; i++)
+                    {
+
+
+                        try
+                        {
+                            username = principals[i]["Name"] as string;
+                        }
+                        catch (IndexOutOfRangeException ii)
+                        {
+                            return;
+                        }
+
+                        string decodedName = Utils.checkClaimsUser(username);
+                        string dispName = principals[i]["Title"] as string;
+
+                        Dispatcher.BeginInvoke(() =>
+                        {
+
+
+                            MultiplePeopleChooser.selectedAccounts.Add(new AccountList(decodedName, dispName));
+
+
+                        }
+                        );
+                    }
+
+
+                },
+               (ssss, eeeee) =>
+               {
+                   Console.WriteLine(eeeee.Message);
+
+               });
+
+
+
+
+
+            },
+
+             (ssss, eeeee) =>
+             {
+                 Console.WriteLine(eeeee.Message);
+
+             });
 
         }
 
@@ -162,7 +159,6 @@ namespace ExcelPart
         {
 
             User Singleuser;
-            // UserCollection multipleUsers;
 
             if (SinglePeopleChooser.selectedAccounts.Count > 0 || MultiplePeopleChooser.selectedAccounts.Count > 0)
             {
