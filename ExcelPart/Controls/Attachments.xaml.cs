@@ -20,7 +20,9 @@ namespace excel_create.Controls
 {
     public partial class Attachments : UserControl
     {
-      
+        private const string siteUrl="https://teams.aexp.com/sites/excel/";
+        private const string libName = "Shared Documents";
+
         private ClientContext myClContext;
         public SelectedFiles selectedFiles;            
 
@@ -47,15 +49,19 @@ namespace excel_create.Controls
                 IDataObject dataObject = e.Data as IDataObject;
                 FileInfo[] files = dataObject.GetData(DataFormats.FileDrop) as FileInfo[];
 
+
                //  InfoList listDetails = row.DataContext as InfoList;
+
+               /* CreateFolder(siteUrl, libName, string.Empty, "Madhur");
+
                 foreach (FileInfo file in files)
                 {
-                    UploadFile(file, "Shared Documents");
-                }
+                    UploadFile(file, libName);
+                }*/
         }
 
 
-        private void UploadFile(FileInfo fileToUpload, string libraryTitle)
+        private void UploadFile(FileInfo fileToUpload, string libraryTitle, string folderName)
         {
             var web = myClContext.Web;
             List destinationList = web.Lists.GetByTitle(libraryTitle);
@@ -76,28 +82,89 @@ namespace excel_create.Controls
 
             fciFileToUpload.Url = fileToUpload.Name;
 
-            Microsoft.SharePoint.Client.File clFileToUpload = destinationList.RootFolder.Files.Add(fciFileToUpload);
-
-            myClContext.Load(clFileToUpload);
-
-            myClContext.ExecuteQueryAsync((s, ee) =>
+            Microsoft.SharePoint.Client.File clFileToUpload = null;
+            if (string.IsNullOrEmpty(folderName))
             {
-                selectedFiles.Add(new FileList(fileToUpload.Name, fileToUpload.Name));
-                Dispatcher.BeginInvoke(() =>
+                clFileToUpload = destinationList.RootFolder.Files.Add(fciFileToUpload);
+
+                myClContext.Load(clFileToUpload);
+
+                myClContext.ExecuteQueryAsync((s, ee) =>
                 {
 
-                    MessageBox.Show("Success", "Success", MessageBoxButton.OK);
-                }
-                    );
+                    Dispatcher.BeginInvoke(() =>
+                    {
+                        selectedFiles.Add(new FileList(fileToUpload.Name, fileToUpload.Name));
+                        MessageBox.Show("Success", "Success", MessageBoxButton.OK);
+                    }
+                        );
 
+
+
+                },
+                (s, ee) =>
+                {
+                    Console.WriteLine(ee.Message);
+
+                });
+
+            }
+            else
+            {
+                FolderCollection folderCol=destinationList.RootFolder.Folders;
+                //myClContext.Load(folderCol, items => items.Include(fldr => fldr.Name.Equals(folderName, StringComparison.OrdinalIgnoreCase)));
+                
+                myClContext.Load(folderCol);
                 
 
-            },
-            (s, ee) =>
-            {
-                Console.WriteLine(ee.Message);
+                myClContext.ExecuteQueryAsync((s, ee) =>
+                {
 
-            });
+                    for (int i = 0; i < folderCol.Count; ++i)
+                    {
+                        if (folderCol[i].Name.Equals(folderName, StringComparison.OrdinalIgnoreCase))
+                        {
+                            clFileToUpload = folderCol[i].Files.Add(fciFileToUpload);
+
+                            myClContext.Load(clFileToUpload);
+                            break;
+                        }
+
+                    }
+
+                    myClContext.ExecuteQueryAsync((ss, eee) =>
+                    {
+
+                        Dispatcher.BeginInvoke(() =>
+                        {
+                            selectedFiles.Add(new FileList(fileToUpload.Name, fileToUpload.Name));
+                            MessageBox.Show("Success", "Success", MessageBoxButton.OK);
+                        }
+                            );
+
+
+
+                    },
+              (ss, eee) =>
+              {
+                  Console.WriteLine(eee.Message);
+
+              });
+
+
+
+                },
+              (s, ee) =>
+              {
+                  Console.WriteLine(ee.Message);
+
+              });
+
+
+              
+            }
+
+         
          
         }
 
@@ -115,9 +182,15 @@ namespace excel_create.Controls
                 Web web = clientContext.Web;
                 List list = web.Lists.GetByTitle(listName);
 
+                Folder rootFolder=list.RootFolder;
+
+                clientContext.Load(rootFolder);
+
+
+
                 ListItemCreationInformation newItem = new ListItemCreationInformation();
                 newItem.UnderlyingObjectType = FileSystemObjectType.Folder;
-                newItem.FolderUrl = siteUrl + "/lists/" + listName;
+                //newItem.FolderUrl = siteUrl + listName;
                 if (!relativePath.Equals(string.Empty))
                 {
                     newItem.FolderUrl += "/" + relativePath;
@@ -125,7 +198,46 @@ namespace excel_create.Controls
                 newItem.LeafName = folderName;
                 ListItem item = list.AddItem(newItem);
                 item.Update();
-                clientContext.ExecuteQuery();
+
+                clientContext.Load(list);
+
+                clientContext.ExecuteQueryAsync((s, ee) =>
+                {
+
+                    Folder newFolder=rootFolder.Folders.Add(folderName);
+
+
+                    Dispatcher.BeginInvoke(() =>
+                    {
+
+                        MessageBox.Show("Created", "Created", MessageBoxButton.OK);
+                    });
+
+                   /* clientContext.ExecuteQueryAsync((ss, eee) =>
+                    {
+
+                        Dispatcher.BeginInvoke(() =>
+                        {
+
+                            MessageBox.Show("Created", "Created", MessageBoxButton.OK);
+                        }
+                    );
+
+
+
+                    },
+        (ss, eee) =>
+        {
+            Console.WriteLine(eee.Message);
+
+        });*/
+
+                },
+          (s, ee) =>
+          {
+              Console.WriteLine(ee.Message);
+
+          });
             }
         }
 
@@ -233,69 +345,19 @@ namespace excel_create.Controls
 
             if (oFileDialog.ShowDialog() == true)
             {
+                CreateFolder(siteUrl, libName, string.Empty, "Madhur");
+
+
                 foreach (FileInfo file in oFileDialog.Files)
                 {
-                    UploadFile(file, "Shared Documents");
+                    UploadFile(file, "Shared Documents", "Madhur");
                 }
             }
 
         }
 
 
-        public void RenameFolder(string siteUrl, string listName, string relativePath, string folderName, string folderNewName)
-        {
-            using (ClientContext clientContext = new ClientContext(siteUrl))
-            {
-                Web web = clientContext.Web;
-                List list = web.Lists.GetByTitle(listName);
-
-              //  string FolderFullPath = GetFullPath(listName, relativePath, folderName);
-
-                CamlQuery query = new CamlQuery();
-                query.ViewXml = "<View Scope=\"RecursiveAll\"> " +
-                                "<Query>" +
-                                    "<Where>" +
-                                        "<And>" +
-                                            "<Eq>" +
-                                                "<FieldRef Name=\"FSObjType\" />" +
-                                                "<Value Type=\"Integer\">1</Value>" +
-                                             "</Eq>" +
-                                              "<Eq>" +
-                                                "<FieldRef Name=\"Title\"/>" +
-                                                "<Value Type=\"Text\">" + folderName + "</Value>" +
-                                              "</Eq>" +
-                                        "</And>" +
-                                     "</Where>" +
-                                "</Query>" +
-                                "</View>";
-
-                if (relativePath.Equals(string.Empty))
-                {
-                    query.FolderServerRelativeUrl = "/lists/" + listName;
-                }
-                else
-                {
-                    query.FolderServerRelativeUrl = "/lists/" + listName + "/" + relativePath;
-                }
-                var folders = list.GetItems(query);
-
-                clientContext.Load(list);
-                clientContext.Load(list.Fields);
-                clientContext.Load(folders, fs => fs.Include(fi => fi["Title"],
-                    fi => fi["DisplayName"],
-                    fi => fi["FileLeafRef"]));
-                clientContext.ExecuteQuery();
-
-                if (folders.Count == 1)
-                {
-
-                    folders[0]["Title"] = folderNewName;
-                    folders[0]["FileLeafRef"] = folderNewName;
-                    folders[0].Update();
-                    clientContext.ExecuteQuery();
-                }
-            }
-        }
+        
 
       
        
