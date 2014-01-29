@@ -34,31 +34,17 @@ namespace excel_create.Controls
 
         #endregion
 
-        public string HostName { get; set; }
-        public string SelectedAccountName { get; set; }
+        private const string siteUrl = "https://teams.aexp.com/sites/excel/";
+        private const string peopleWsUrl = "/_vti_bin/People.asmx";
         public MainPage HostControl { get; set; }
         
         public SelectedAccounts selectedAccounts;
 
         public bool AllowMultiple { get; set; }
 
-        public enum AddressType
-        {
-            executor,
-            director,
-            vp,
-            fte_contribute
-
-        }
-
-
-        public AddressType PickerAddressType { get; set; }
-
         public PPLPicker()
         {
             InitializeComponent();
-
-            // UserNameTxt.TextDecorations = TextDecorations.Underline;
 
             selectedAccounts = new SelectedAccounts();
 
@@ -69,7 +55,6 @@ namespace excel_create.Controls
                 Mode = BindingMode.TwoWay
             };
 
-            // AccountListBox.SetBinding(searc
             AccountListBox.DataContext = selectedAccounts;
             AccountListBox.ItemsSource = selectedAccounts;
 
@@ -77,12 +62,17 @@ namespace excel_create.Controls
 
         private void OKBtn_Click(object sender, RoutedEventArgs e)
         {
-          
-
             if (selectedAccounts.Count > 0)
             {
-               // MessageBox.Show(GetDisplayNames(selectedAccounts), "Selected People", MessageBoxButton.OK);
-               // MessageBox.Show(GetDisplayAccounts(selectedAccounts), "Selected Accounts", MessageBoxButton.OK);
+
+                if (SubmitClicked != null)
+                {
+
+                    SubmitClicked(this, new EventArgs());
+
+                }
+
+                this.DialogResult = true;
             }
             else
             {
@@ -93,51 +83,13 @@ namespace excel_create.Controls
                 return;
 
             }
-
-            //plug in the values
-            if (SubmitClicked != null)
-            {
-
-                SubmitClicked(this, new EventArgs());
-
-            }
-
-          
-
-            this.DialogResult = true;
+            
         }
-
-        private string GetDisplayNames(ObservableCollection<AccountList> accountList)
-        {
-            StringBuilder dispString = new StringBuilder();
-
-            foreach (AccountList account in accountList)
-            {
-                dispString = dispString.Append(account.DisplayName + ";");
-            }
-
-            return dispString.ToString();
-
-        }
-
-        private string GetDisplayAccounts(ObservableCollection<AccountList> accountList)
-        {
-            StringBuilder dispString = new StringBuilder();
-
-            foreach (AccountList account in accountList)
-            {
-                dispString = dispString.Append(account.AccountName + ";");
-            }
-
-            return dispString.ToString();
-
-        }
-
+       
         private void CloseDialog()
         {
             //clear out selections for next time
             SearchTxt.Text = string.Empty;
-           //  UserNameTxt.Text = string.Empty;
             ResultsLst.Items.Clear();
         }
 
@@ -161,9 +113,7 @@ namespace excel_create.Controls
                 //use the host name property to configure the request against the site in 
                 //which the control is hosted
                 ps.Endpoint.Address =
-               new System.ServiceModel.EndpointAddress("https://teams.aexp.com/sites/excel" + "/_vti_bin/People.asmx");
-
-
+               new System.ServiceModel.EndpointAddress(siteUrl + peopleWsUrl);
 
                 //create the handler for when the call completes
                 ps.SearchPrincipalsCompleted += new EventHandler<SearchPrincipalsCompletedEventArgs>(ps_SearchPrincipalsCompleted);
@@ -172,7 +122,6 @@ namespace excel_create.Controls
             }
             catch (Exception ex)
             {
-                //ERROR LOGGING HERE
                 Debug.WriteLine(ex.Message);
 
                 MessageBox.Show("There was a problem executing the search; please try again " +
@@ -182,6 +131,7 @@ namespace excel_create.Controls
                 this.Cursor = Cursors.Arrow;
             }
         }
+
         void ps_SearchPrincipalsCompleted(object sender, SearchPrincipalsCompletedEventArgs e)
         {
             try
@@ -245,10 +195,8 @@ namespace excel_create.Controls
 
             //cast the selected name as a PickerEntry
             PickerEntry pe = (PickerEntry)ResultsLst.SelectedItem;
-            // UserNameTxt.Text = pe.DisplayName;
-            SelectedAccountName = pe.AccountName;
 
-            bool contains = selectedAccounts.Any(p => p.AccountName.Equals(SelectedAccountName));
+            bool contains = selectedAccounts.Any(p => p.AccountName.Equals(pe.AccountName));
 
             if (!contains)
             {
@@ -265,9 +213,6 @@ namespace excel_create.Controls
                 }
             }
 
-            
-          //  syncListBox();
-
         }
 
         private void CancelBtn_Click(object sender, RoutedEventArgs e)
@@ -281,12 +226,6 @@ namespace excel_create.Controls
             if (e.Key == Key.Enter)
                 SearchBtn_Click(sender, new RoutedEventArgs());
         }
-
-
-
-        public string Email { get; set; }
-
-        public string Department { get; set; }
 
         private void RemoveAccountButton_click(object sender, RoutedEventArgs e)
         {

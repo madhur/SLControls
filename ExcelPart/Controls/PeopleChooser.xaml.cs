@@ -19,13 +19,14 @@ namespace ExcelPart.Controls
     public partial class PeopleChooser : UserControl
     {
         #region Event Handler
-
-        public event EventHandler SubmitClicked;
         ContextMenu cMenu;
         MenuItem mnuItem;
 
 
         #endregion
+
+        private const string siteUrl = "https://teams.aexp.com/sites/excel/";
+        private const string peopleWsUrl = "/_vti_bin/People.asmx";
 
         public SelectedAccounts selectedAccounts;
         public bool AllowMultiple { get; set; }
@@ -65,11 +66,7 @@ namespace ExcelPart.Controls
 
             peoplePicker.AllowMultiple = AllowMultiple;
 
-            //throw new NotImplementedException();
         }
-
-       
-        
         
         void peoplePicker_SubmitClicked(object sender, EventArgs e)
         {
@@ -100,17 +97,13 @@ namespace ExcelPart.Controls
             }
             try
             {
-                //change the cursor to hourglass
                 this.Cursor = Cursors.Wait;
-
 
                 PeopleSoapClient ps = new PeopleSoapClient();
                 //use the host name property to configure the request against the site in 
                 //which the control is hosted
                 ps.Endpoint.Address =
-               new System.ServiceModel.EndpointAddress("https://teams.aexp.com/sites/excel" + "/_vti_bin/People.asmx");
-
-
+               new System.ServiceModel.EndpointAddress(siteUrl+peopleWsUrl);
 
                 //create the handler for when the call completes
                 ps.SearchPrincipalsCompleted += new EventHandler<SearchPrincipalsCompletedEventArgs>(ps_SearchPrincipalsCompleted);
@@ -183,7 +176,6 @@ MessageBoxButton.OK);
                                 values.Add(decodedAccount, new PickerEntry(pi.DisplayName, decodedAccount, pi.Email, pi.Department));
                         }
 
-
                         SetSingleResult(values);
                       
                     }
@@ -219,6 +211,7 @@ MessageBoxButton.OK);
         {
             peoplePicker.Show();
 
+            // Restore the selected accounts to people picker
             if (selectedAccounts.Count > 0)
             {
                 peoplePicker.selectedAccounts.Clear();
@@ -256,13 +249,14 @@ MessageBoxButton.OK);
 
         private void UserTextBox_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
-
+            // Display a menu on mouse right button up
             cMenu = new ContextMenu();
             
             foreach (PickerEntry pi in values.Values)
             {
                 mnuItem = new MenuItem();
                 mnuItem.Header = pi.DisplayName;
+                mnuItem.Name = pi.AccountName;
                 mnuItem.Click += mnuItem_Click;
                 cMenu.Items.Add(mnuItem);
 
@@ -275,8 +269,10 @@ MessageBoxButton.OK);
         {
             MenuItem mnu = sender as MenuItem;
 
-            UserTextBox.Text = mnu.Header.ToString();
-            
+            values = new Dictionary<string, PickerEntry>();
+            values.Add(mnu.Name, new PickerEntry(mnu.Header.ToString(), mnu.Name, string.Empty, string.Empty));
+
+            SetSingleResult(values);
         }
     }
 }

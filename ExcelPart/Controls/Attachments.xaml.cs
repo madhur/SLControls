@@ -44,20 +44,10 @@ namespace excel_create.Controls
 
             if (e.Data == null)
                 return;
-
            
                 IDataObject dataObject = e.Data as IDataObject;
                 FileInfo[] files = dataObject.GetData(DataFormats.FileDrop) as FileInfo[];
 
-
-               //  InfoList listDetails = row.DataContext as InfoList;
-
-               /* CreateFolder(siteUrl, libName, string.Empty, "Madhur");
-
-                foreach (FileInfo file in files)
-                {
-                    UploadFile(file, libName);
-                }*/
         }
 
 
@@ -170,7 +160,7 @@ namespace excel_create.Controls
 
         private void ConnectToSP()
         {
-            myClContext = new ClientContext("https://teams.aexp.com/sites/excel/");
+            myClContext = new ClientContext(siteUrl);
 
           
         }
@@ -212,25 +202,6 @@ namespace excel_create.Controls
 
                         MessageBox.Show("Created", "Created", MessageBoxButton.OK);
                     });
-
-                   /* clientContext.ExecuteQueryAsync((ss, eee) =>
-                    {
-
-                        Dispatcher.BeginInvoke(() =>
-                        {
-
-                            MessageBox.Show("Created", "Created", MessageBoxButton.OK);
-                        }
-                    );
-
-
-
-                    },
-        (ss, eee) =>
-        {
-            Console.WriteLine(eee.Message);
-
-        });*/
 
                 },
           (s, ee) =>
@@ -355,11 +326,6 @@ namespace excel_create.Controls
             }
 
         }
-
-
-        
-
-      
        
     }
 }
