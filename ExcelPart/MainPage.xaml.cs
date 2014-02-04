@@ -259,101 +259,11 @@ namespace ExcelPart
 
 		private void SubmitFilesButton_Click(object sender, RoutedEventArgs e)
 		{
-			RenameFolder(siteUrl, "Shared Documents", string.Empty, "Madhur", "MadhurNewFolder");
+			//RenameFolder(siteUrl, "Shared Documents", string.Empty, "Madhur", "MadhurNewFolder");
 		}
 
 
-		public void RenameFolder(string siteUrl, string listName, string relativePath, string folderName, string folderNewName)
-		{
-			using (ClientContext clientContext = new ClientContext(siteUrl))
-			{
-				Web web = clientContext.Web;
-				List list = web.Lists.GetByTitle(listName);
-
-				//  string FolderFullPath = GetFullPath(listName, relativePath, folderName);
-
-				CamlQuery query = new CamlQuery();
-				query.ViewXml = "<View Scope=\"RecursiveAll\"> " +
-								"<Query>" +
-									"<Where>" +
-									   // "<And>" +
-											"<Eq>" +
-												"<FieldRef Name=\"FSObjType\" />" +
-												"<Value Type=\"Integer\">1</Value>" +
-											 "</Eq>" +
-											 /* "<Eq>" +
-												"<FieldRef Name=\"Title\"/>" +
-												"<Value Type=\"Text\">" + folderName + "</Value>" +
-											  "</Eq>" +*/
-									   // "</And>" +
-									 "</Where>" +
-								"</Query>" +
-								"</View>";
-
-			   /* if (relativePath.Equals(string.Empty))
-				{
-					query.FolderServerRelativeUrl = "/lists/" + listName;
-				}
-				else
-				{
-					query.FolderServerRelativeUrl = "/lists/" + listName + "/" + relativePath;
-				}*/
-
-				//query.FolderServerRelativeUrl = "/"+listName;
-
-				var folders = list.GetItems(query);
-
-				clientContext.Load(list);
-				clientContext.Load(list.Fields);
-				clientContext.Load(folders, fs => fs.Include(fi => fi["Title"],
-					fi => fi["DisplayName"],
-					fi => fi["FileLeafRef"]));
-			   // clientContext.ExecuteQuery();
-
-				clientContext.ExecuteQueryAsync((s, ee) =>
-				{
-
-					if (folders.Count == 1)
-					{
-
-						folders[0]["Title"] = folderNewName;
-						folders[0]["FileLeafRef"] = folderNewName;
-						folders[0].Update();
-						clientContext.ExecuteQueryAsync((ss, eee) =>
-						{
-
-							Dispatcher.BeginInvoke(() =>
-							{
-
-								MessageBox.Show("Success", "Success", MessageBoxButton.OK);
-							});
-						
-
-
-
-						},
-		  (ss, eee) =>
-		  {
-			  Console.WriteLine(eee.Message);
-
-		  });
-
-
-
-					}
-				   
-
-
-				},
-		  (s, ee) =>
-		  {
-			  Console.WriteLine(ee.Message);
-
-		  });
-
-			   
-			}
-		}
+	
 
 
 	}

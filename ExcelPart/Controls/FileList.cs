@@ -14,7 +14,7 @@ using System.Windows.Shapes;
 namespace ExcelPart.Controls
 {
 
-    public class SelectedFiles : ObservableCollection<FileList>
+    public class SelectedFiles : ObservableCollection<FileEntry>
     {
         public SelectedFiles()
             : base()
@@ -26,7 +26,7 @@ namespace ExcelPart.Controls
         }
     }
 
-    public class FileList
+    public class FileEntry
     {
         private string _fileName;
         private string _fileDesc;
@@ -58,7 +58,7 @@ namespace ExcelPart.Controls
             }
         }
 
-        public FileList(String _fileName, String _fileDesc)
+        public FileEntry(String _fileName, String _fileDesc)
         {
             this.FileName = _fileName;
             this.FileDesc = _fileDesc;

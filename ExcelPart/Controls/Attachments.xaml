@@ -5,22 +5,26 @@
            xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation" x:Class="excel_create.Controls.Attachments"
   
            Width="450" Height="350" 
-            BorderBrush="{x:Null}" Foreground="{x:Null}" BorderThickness="0" Background="White">
+            BorderBrush="{x:Null}" Foreground="{x:Null}" BorderThickness="0" Background="White" Unloaded="UserControl_Unloaded_1">
     
         <StackPanel Margin="0,0,0,108" Orientation="Vertical">
 
             <ListBox x:Name="FileListBox" DataContext="selectedFiles" ItemsSource="{Binding SelectedFiles, Mode=TwoWay}" HorizontalAlignment="Left" Height="150" VerticalAlignment="Top" Width="430" Drop="FileListBox_Drop">
             </ListBox>
-            <TextBlock HorizontalAlignment="Center"  x:Name="txtProgress"  Foreground="Green" Width="120" Height="40" Margin="163,0"/>
-
-<Button Canvas.Left="300" HorizontalAlignment="Center"  Click="FileUpload_Click" Width="100" Height="25" Content="Select Files"/>
-                
-            
-                
-                
-           
-
-
+        <StackPanel Orientation="Horizontal" Height="82">
+            <Button x:Name="NextButton" Content="Next"  Click="NextButton_Click" Height="33" VerticalAlignment="Top" Width="70"/>
+            <Button x:Name="SelectButton"  Click="FileUpload_Click" Width="100" Height="33" Content="Select Files" VerticalAlignment="Top" />
+            <Button x:Name="SubmitButton"   Width="70" Height="33" Content="Submit" VerticalAlignment="Top" Click="SubmitButton_Click" />
+            <Button x:Name="RemoveButton"   Width="100" Height="33" Content="Remove File" VerticalAlignment="Top" Click="RemoveButton_Click" />
+            <Button x:Name="CancelButton"   Width="70" Height="33" Content="Cancel" VerticalAlignment="Top" Click="CancelButton_Click" />
         </StackPanel>
+
+
+
+
+
+
+
+    </StackPanel>
     
 </UserControl>
