@@ -5,7 +5,7 @@
            xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation" x:Class="excel_create.Controls.Attachments"
   
            Width="450" Height="350" 
-            BorderBrush="{x:Null}" Foreground="{x:Null}" BorderThickness="0" Background="White" Unloaded="UserControl_Unloaded_1">
+            BorderBrush="{x:Null}" Foreground="{x:Null}" BorderThickness="0" Background="White" Unloaded="UserControl_Unloaded_1" Loaded="UserControl_Loaded_1">
     
         <StackPanel Margin="0,0,0,108" Orientation="Vertical">
 

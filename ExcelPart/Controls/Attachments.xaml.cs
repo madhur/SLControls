@@ -14,6 +14,7 @@ using System.Threading;
 using System.IO;
 using System.Windows.Resources;
 using ExcelPart.Controls;
+using System.Windows.Browser;
 
 
 namespace excel_create.Controls
@@ -341,7 +342,87 @@ namespace excel_create.Controls
             }
         }
 
+        public void LoadFiles(string siteUrl, string listName, string relativePath, string folderName)
+        {
 
+            using (ClientContext clientContext = new ClientContext(siteUrl))
+            {
+                Web web = clientContext.Web;
+                List list = web.Lists.GetByTitle(listName);
+
+                CamlQuery query = new CamlQuery();
+                query.ViewXml = "<View>"
+                + "<Query>"
+                //+ "<Where><Eq><FieldRef Name='FileLeafRef'/><Value Type='File'>" + fileName.FileName + "</Value></Eq></Where>"
+                + "</Query>"
+                + "</View>";
+
+                if (!string.IsNullOrEmpty(folderName))
+                {
+                    query.FolderServerRelativeUrl = "/sites/excel/" + listName + "/" + folderName + "/";
+                }
+
+                ListItemCollection listItems = list.GetItems(query);
+                clientContext.Load(listItems);
+
+                clientContext.ExecuteQueryAsync((s, ee) =>
+                {
+
+                    foreach (ListItem listitem in listItems)
+                    {
+                        clientContext.Load(listitem);
+
+                        clientContext.ExecuteQueryAsync((ss, eee) =>
+                        {
+                            
+
+                            Dispatcher.BeginInvoke(() =>
+                            {
+
+                                selectedFiles.Add(new FileEntry(listitem.FieldValues["FileLeafRef"].ToString(), listitem.FieldValues["FileLeafRef"].ToString()));
+                                RemoveButton.IsEnabled = true;
+                                NextButton.IsEnabled = false;
+                                SelectButton.IsEnabled = true;
+
+                            });
+
+                        },
+                      (ss, eee) =>
+                      {
+                          Console.WriteLine(eee.Message);
+
+                      });
+
+
+                       
+
+                        clientContext.ExecuteQueryAsync((ss, eee) =>
+                        {
+
+                        },
+                        (ss, eee) =>
+                        {
+                            Console.WriteLine(eee.Message);
+
+                        });
+
+
+                    }
+
+                },
+         (s, ee) =>
+         {
+             Console.WriteLine(ee.Message);
+
+         });
+
+
+
+            }
+
+
+
+        }
         public void DeleteFile(string siteUrl, string listName, string relativePath, string folderName, FileEntry fileName)
         {
             using (ClientContext clientContext = new ClientContext(siteUrl))
@@ -600,6 +681,28 @@ namespace excel_create.Controls
             if (!string.IsNullOrEmpty(folderName))
             {
                 DeleteFolder(siteUrl, libName, string.Empty, folderName);
+            }
+        }
+
+        private void UserControl_Loaded_1(object sender, RoutedEventArgs e)
+        {
+            int id = -1;
+            if (HtmlPage.Document.QueryString.ContainsKey("q"))
+            {
+                string queryStringValue = HtmlPage.Document.QueryString["q"];
+                if (Int32.TryParse(queryStringValue, out id))
+                {
+                    newFolderName = queryStringValue;
+                    folderName = newFolderName;
+
+                    LoadFiles(siteUrl, libName, string.Empty, newFolderName);
+                    // the result was successful and
+                    // the correct ID will be inserted to id
+                }
+                else
+                {
+                    // the result was not successful                    
+                }
             }
         }
 
